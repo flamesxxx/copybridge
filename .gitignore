@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+out/
+release/
+
+.DS_Store
+*.log
+npm-debug.log*
+
+.superpowers/
+docs/superpowers/
+.env
+.env.*
+
+copybridge-*.zip
+.copybridge-prototype.json

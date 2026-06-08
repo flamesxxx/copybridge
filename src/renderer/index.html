@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CopyBridge</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Local-first Universal Clipboard</div>
+          <h1>Copy on one computer. Paste on the other.</h1>
+          <p>CopyBridge keeps text and images in sync between your Mac and Windows clipboard over your local network. No account. No cloud. No Telegram workaround.</p>
+        </div>
+        <div class="status-card" id="statusCard">
+          <div class="pulse"></div>
+          <div>
+            <strong id="statusLabel">Starting…</strong>
+            <span id="statusHint">Looking for nearby devices</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="panel local-panel">
+          <div class="panel-header">
+            <div>
+              <h2>This device</h2>
+              <p>Your local CopyBridge node</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="syncToggle" checked />
+              <span></span>
+            </label>
+          </div>
+          <div class="device-identity">
+            <div class="device-icon">⌘</div>
+            <div>
+              <strong id="deviceName">—</strong>
+              <span id="deviceAddress">—</span>
+            </div>
+          </div>
+          <div class="last-sync" id="lastSync">No clipboard sync yet</div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Nearby devices</h2>
+              <p>Discovered and remembered automatically</p>
+            </div>
+          </div>
+          <div id="peers" class="peers empty">No devices found yet</div>
+          <form class="manual" id="manualForm">
+            <input id="manualPeer" placeholder="Advanced fallback: 192.168.1.24:47631" />
+            <button type="submit">Connect</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="panel log-panel">
+        <div class="panel-header compact">
+          <div>
+            <h2>Activity</h2>
+              <p>Recent text, image, and network events</p>
+          </div>
+          <button id="copyDiagnostics" class="ghost">Copy diagnostics</button>
+        </div>
+        <div id="logs" class="logs"></div>
+      </section>
+    </main>
+    <script src="renderer.js"></script>
+  </body>
+</html>
