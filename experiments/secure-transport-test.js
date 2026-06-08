@@ -2,6 +2,7 @@ const assert = require('assert');
 const {
   createCryptoIdentity,
   deriveSessionKey,
+  createVerificationCode,
   encryptPayload,
   decryptPayload,
 } = require('../src/secureTransport');
@@ -24,6 +25,8 @@ const windowsKey = deriveSessionKey({
 });
 
 assert.equal(macKey.toString('hex'), windowsKey.toString('hex'));
+assert.match(createVerificationCode(macKey), /^\d{3} \d{3}$/);
+assert.equal(createVerificationCode(macKey), createVerificationCode(windowsKey));
 
 const payload = {
   type: 'clipboard',

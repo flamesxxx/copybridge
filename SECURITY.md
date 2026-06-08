@@ -6,15 +6,15 @@ CopyBridge is an early local-first prototype.
 
 - Clipboard payloads are encrypted after devices exchange public keys.
 - Encryption is used for both text and image clipboard messages.
+- New devices require first-pairing verification with a matching short code before clipboard sync starts.
 - Clipboard sync is local-network only.
 
 ## Not implemented yet
 
-- First-pairing verification with a short code.
 - Signed production installers.
 - Automatic security updates.
 
-Until first-pairing verification is implemented, CopyBridge protects against passive local-network inspection, but users should only test it on networks they trust.
+CopyBridge is still a prototype. Users should test it on networks they trust until production installers and broader security review are complete.
 
 ## Reporting
 

@@ -19,9 +19,14 @@ const {
 const {
   createCryptoIdentity,
   deriveSessionKey,
+  createVerificationCode,
   encryptPayload,
   decryptPayload,
 } = require('./secureTransport');
+const {
+  isTrustedPeer,
+  upsertTrustedPeer,
+} = require('./trustedPeers');
 
 const storePath = path.join(os.homedir(), '.copybridge-prototype.json');
 const store = {
@@ -182,6 +187,8 @@ function peerSnapshot() {
     port: peer.port,
     connected: peer.connected,
     secure: Boolean(peer.sessionKey),
+    trusted: Boolean(peer.trusted),
+    verificationCode: peer.trusted ? null : peer.verificationCode,
     discoveredBy: peer.discoveredBy,
     lastSeen: peer.lastSeen,
   }));
@@ -306,13 +313,18 @@ function handlePeerMessage(peer, msg, socket) {
     peer.port = msg.port || peer.port;
     if (msg.publicKey) {
       try {
+        peer.publicKey = msg.publicKey;
         peer.sessionKey = deriveSessionKey({
           localPrivateKey: CRYPTO_IDENTITY.privateKey,
           remotePublicKey: msg.publicKey,
           localDeviceId: DEVICE_ID,
           remoteDeviceId: peer.deviceId,
         });
-        log(`Secure channel ready with ${peer.name}`);
+        peer.verificationCode = createVerificationCode(peer.sessionKey);
+        peer.trusted = isTrustedPeer(store.get('trustedPeers', []), peer);
+        log(peer.trusted
+          ? `Secure trusted channel ready with ${peer.name}`
+          : `Secure channel ready with ${peer.name}; waiting for verification`);
       } catch (error) {
         log(`Secure channel failed with ${peer.name}: ${error.message}`, 'error');
       }
@@ -327,6 +339,10 @@ function handlePeerMessage(peer, msg, socket) {
   if (msg.type === 'secure-clipboard' && syncEnabled) {
     if (!peer.sessionKey) {
       log(`Ignored encrypted clipboard from ${peer.name}: secure channel is not ready`, 'warn');
+      return;
+    }
+    if (!peer.trusted) {
+      log(`Ignored encrypted clipboard from ${peer.name}: verification is required`, 'warn');
       return;
     }
 
@@ -402,7 +418,7 @@ function sendRaw(peer, payload) {
 }
 
 function sendClipboardPayload(peer, payload) {
-  if (!peer.sessionKey) return false;
+  if (!peer.sessionKey || !peer.trusted) return false;
   return sendRaw(peer, encryptPayload(payload, peer.sessionKey));
 }
 
@@ -562,8 +578,24 @@ function setSyncEnabled(value) {
   broadcastState();
 }
 
+function trustPeer(peerId) {
+  const peer = peers.get(peerId);
+  if (!peer?.deviceId || !peer.publicKey || !peer.sessionKey) {
+    return { ok: false, error: 'Peer is not ready for verification' };
+  }
+
+  const trustedPeers = upsertTrustedPeer(store.get('trustedPeers', []), peer);
+  store.set('trustedPeers', trustedPeers);
+  peer.trusted = true;
+  peers.set(peer.id, peer);
+  log(`Trusted ${peer.name}`);
+  broadcastState();
+  return { ok: true };
+}
+
 ipcMain.handle('get-state', () => ({ ...state, logs }));
 ipcMain.handle('set-sync-enabled', (_event, value) => setSyncEnabled(value));
+ipcMain.handle('trust-peer', (_event, peerId) => trustPeer(peerId));
 ipcMain.handle('connect-manual', (_event, value) => {
   const [host, portRaw] = String(value || '').trim().split(':');
   const port = Number(portRaw || PORT);

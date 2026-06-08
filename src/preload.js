@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('copybridge', {
   getState: () => ipcRenderer.invoke('get-state'),
   setSyncEnabled: (value) => ipcRenderer.invoke('set-sync-enabled', value),
   connectManual: (value) => ipcRenderer.invoke('connect-manual', value),
+  trustPeer: (peerId) => ipcRenderer.invoke('trust-peer', peerId),
   copyDiagnostics: () => ipcRenderer.invoke('copy-diagnostics'),
   onState: (callback) => {
     const listener = (_event, state) => callback(state);

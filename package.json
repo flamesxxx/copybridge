@@ -15,11 +15,12 @@
     "start": "electron .",
     "start:a": "COPYBRIDGE_PORT=47631 COPYBRIDGE_NAME=MacBook npm start",
     "start:b": "COPYBRIDGE_PORT=47632 COPYBRIDGE_NAME=Windows-PC COPYBRIDGE_PEER=127.0.0.1:47631 npm start",
-    "check": "node --check src/main.js && node --check src/preload.js && node --check src/clipboardPayload.js && node --check src/rememberedPeers.js && node --check src/secureTransport.js && node --check src/renderer/renderer.js",
-    "test": "npm run check && npm run test:secure && npm run test:image && npm run test:remembered && npm run test:network",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/clipboardPayload.js && node --check src/rememberedPeers.js && node --check src/secureTransport.js && node --check src/trustedPeers.js && node --check src/renderer/renderer.js",
+    "test": "npm run check && npm run test:secure && npm run test:trusted && npm run test:image && npm run test:remembered && npm run test:network",
     "test:image": "node experiments/image-payload-test.js",
     "test:remembered": "node experiments/remembered-peer-test.js",
     "test:secure": "node experiments/secure-transport-test.js",
+    "test:trusted": "node experiments/trusted-peer-test.js",
     "test:network": "node experiments/network-test.js"
   },
   "keywords": [

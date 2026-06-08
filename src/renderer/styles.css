@@ -10,6 +10,7 @@ button, input { font: inherit; }
 .shell { width: min(1120px, calc(100vw - 44px)); margin: 0 auto; padding: 34px 0; }
 .hero { display: grid; grid-template-columns: 1fr 280px; gap: 28px; align-items: end; margin-bottom: 24px; }
 .eyebrow { color: #a78bfa; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+.eyebrow.small { font-size: 11px; margin-bottom: 8px; }
 h1 { font-size: clamp(38px, 6vw, 70px); line-height: .92; letter-spacing: -0.06em; margin: 0 0 18px; max-width: 760px; }
 p { color: #94a3b8; margin: 0; line-height: 1.5; }
 .status-card, .panel { border: 1px solid rgba(148,163,184,.18); background: rgba(15,23,42,.72); backdrop-filter: blur(18px); box-shadow: 0 24px 90px rgba(0,0,0,.32); border-radius: 28px; }
@@ -47,10 +48,15 @@ h2 { margin: 0 0 5px; font-size: 18px; letter-spacing: -0.02em; }
 .manual button, .ghost { border: 0; border-radius: 14px; padding: 12px 14px; color: white; background: #7c3aed; cursor: pointer; }
 .ghost { background: rgba(148,163,184,.13); color: #e2e8f0; }
 .log-panel { margin-top: 18px; }
+.trust-panel { margin-top: 18px; display: grid; grid-template-columns: 1fr auto auto; gap: 18px; align-items: center; }
+.trust-panel.hidden { display: none; }
+.trust-code { border: 1px solid rgba(167,139,250,.28); background: rgba(124,58,237,.14); border-radius: 18px; padding: 14px 18px; color: #f8fafc; font-size: 28px; font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.trust-panel button { border: 0; border-radius: 14px; padding: 13px 16px; color: white; background: #7c3aed; cursor: pointer; white-space: nowrap; }
+.trust-panel button:disabled { opacity: .62; cursor: default; }
 .logs { display: grid; gap: 8px; max-height: 180px; overflow: auto; padding-right: 6px; }
 .log { display: grid; grid-template-columns: 78px 1fr; gap: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(2,6,23,.42); }
 .log span { color: #64748b; font-variant-numeric: tabular-nums; }
 .log p { color: #cbd5e1; font-size: 13px; }
 .log.error p { color: #fecaca; }
 .log.warn p { color: #fde68a; }
-@media (max-width: 820px) { .hero, .grid { grid-template-columns: 1fr; } }
+@media (max-width: 820px) { .hero, .grid, .trust-panel { grid-template-columns: 1fr; } }

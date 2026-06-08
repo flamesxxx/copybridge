@@ -24,6 +24,7 @@ CopyBridge focuses on one narrow job: make Mac <-> Windows clipboard sync feel i
 - Automatic local-network discovery through mDNS.
 - Silent reconnect to the last successful device.
 - Encrypted clipboard payloads after devices exchange public keys.
+- First-pairing verification with a matching short code.
 - Echo protection so clipboard values do not bounce forever.
 - Activity log, device status, sync toggle, and diagnostics copy.
 - Manual `host:port` fallback for networks where discovery is blocked.
@@ -77,6 +78,7 @@ Individual checks:
 npm run check
 npm run test:network
 npm run test:secure
+npm run test:trusted
 npm run test:remembered
 npm run test:image
 node experiments/discovery-test.js
@@ -84,22 +86,18 @@ node experiments/discovery-test.js
 
 ## Security model
 
-Clipboard payloads are encrypted after devices exchange public keys. This protects clipboard data from passive local-network inspection.
-
-Before a public release, CopyBridge still needs first-pairing verification: a short code shown on both devices so the user can confirm the first connection was not intercepted.
+Clipboard payloads are encrypted after devices exchange public keys. New devices must be confirmed with a matching short verification code before clipboard sync starts.
 
 ## Known limitations
 
 - Local network only.
 - mDNS can be slow or blocked on guest Wi-Fi, corporate networks, VPN-heavy setups, or restrictive routers.
 - Manual `host:port` fallback exists for diagnostics, not as the intended everyday flow.
-- First-pairing verification is not implemented yet.
 - Files are not supported yet.
 - Installers are not built yet.
 
 ## Roadmap
 
-- Add first-pairing verification with a short code.
 - Package macOS `.dmg` and Windows installer.
 - Improve first-run onboarding.
 - Add a short demo GIF for the README.

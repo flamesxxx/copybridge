@@ -46,6 +46,15 @@ function deriveSessionKey(options) {
   ));
 }
 
+function createVerificationCode(sessionKey) {
+  const digest = crypto.createHash('sha256')
+    .update(Buffer.from('copybridge verification code'))
+    .update(sessionKey)
+    .digest();
+  const value = digest.readUInt32BE(0) % 1000000;
+  return String(value).padStart(6, '0').replace(/(\d{3})(\d{3})/, '$1 $2');
+}
+
 function encryptPayload(payload, sessionKey) {
   const nonce = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv('aes-256-gcm', sessionKey, nonce);
@@ -88,6 +97,7 @@ function decryptPayload(envelope, sessionKey) {
 module.exports = {
   createCryptoIdentity,
   deriveSessionKey,
+  createVerificationCode,
   encryptPayload,
   decryptPayload,
 };

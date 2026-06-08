@@ -10,6 +10,11 @@ const logsEl = document.getElementById('logs');
 const manualForm = document.getElementById('manualForm');
 const manualPeer = document.getElementById('manualPeer');
 const copyDiagnostics = document.getElementById('copyDiagnostics');
+const trustPanel = document.getElementById('trustPanel');
+const trustCode = document.getElementById('trustCode');
+const trustButton = document.getElementById('trustButton');
+
+let pendingTrustPeerId = null;
 
 function render(state) {
   const connected = state.peers.filter(peer => peer.connected).length;
@@ -24,6 +29,17 @@ function render(state) {
   syncToggle.checked = Boolean(state.syncEnabled);
   deviceName.textContent = state.deviceName || 'This device';
   deviceAddress.textContent = `${state.localAddress}:${state.port}`;
+
+  const pendingPeer = state.peers.find(peer => peer.connected && peer.secure && !peer.trusted && peer.verificationCode);
+  if (pendingPeer) {
+    pendingTrustPeerId = pendingPeer.id;
+    trustPanel.classList.remove('hidden');
+    trustCode.textContent = pendingPeer.verificationCode;
+    trustButton.textContent = `Trust ${pendingPeer.name}`;
+  } else {
+    pendingTrustPeerId = null;
+    trustPanel.classList.add('hidden');
+  }
 
   if (state.lastSync) {
     const verb = state.lastSync.direction === 'sent' ? 'Sent to' : 'Received from';
@@ -49,7 +65,7 @@ function render(state) {
         <div class="peer-dot"></div>
         <div>
           <strong>${escapeHtml(peer.name)}</strong>
-          <span>${escapeHtml(peer.host)}:${peer.port || '—'} · ${peer.connected ? 'connected' : 'offline'}${peer.secure ? ' · secure' : ''} · ${peer.discoveredBy}</span>
+          <span>${escapeHtml(peer.host)}:${peer.port || '—'} · ${peer.connected ? 'connected' : 'offline'}${peer.secure ? ' · secure' : ''}${peer.trusted ? ' · trusted' : peer.secure ? ' · verify' : ''} · ${peer.discoveredBy}</span>
         </div>
       </div>
     `).join('');
@@ -83,6 +99,13 @@ copyDiagnostics.addEventListener('click', async () => {
   await window.copybridge.copyDiagnostics();
   copyDiagnostics.textContent = 'Copied';
   setTimeout(() => copyDiagnostics.textContent = 'Copy diagnostics', 1200);
+});
+
+trustButton.addEventListener('click', async () => {
+  if (!pendingTrustPeerId) return;
+  trustButton.disabled = true;
+  await window.copybridge.trustPeer(pendingTrustPeerId);
+  trustButton.disabled = false;
 });
 
 window.copybridge.onState(render);
